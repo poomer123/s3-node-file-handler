@@ -15,6 +15,23 @@ const s3 = new AWS.S3({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
+app.post("/get-file", (req, res) => {
+    const s3params = {
+        Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+        Key: req.body.filename,
+    };
+    s3.getObject(s3params, (err, data) => {
+        if (err) {
+            console.log(err, err.stack);
+        }
+
+        res.json({
+            file: req.body.filename,
+            data: data.Body.toString("utf-8"),
+        });
+    });
+});
+
 app.post('/upload-file', (req, res) => {
 	const fileContent = fs.readFileSync("./src/mobile.jpg");
 	const s3params = {
