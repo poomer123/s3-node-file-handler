@@ -19,7 +19,7 @@ app.post('/upload-file', (req, res) => {
 	const fileContent = fs.readFileSync("./src/mobile.jpg");
 	const s3params = {
         Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
-        Key: `${Math.floor(Math.random() * 10)}-${new Date().getTime()}.jpg`,
+        Key: `products/${Math.floor(Math.random() * 10)}-${new Date().getTime()}.jpg`,
         Body: fileContent,
     };
 
