@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const AWS = require('aws-sdk');
 
-require("dotenv").config();
+require('dotenv').config();
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -11,47 +11,63 @@ app.use(express.json({ limit: '10mb', extended: true }));
 AWS.config.update({ region: 'ap-southeast-1' });
 
 const s3 = new AWS.S3({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
-app.post("/get-file", (req, res) => {
-    const s3params = {
-        Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
-        Key: req.body.filename,
-    };
-    s3.getObject(s3params, (err, data) => {
-        if (err) {
-            console.log(err, err.stack);
-        }
+app.post('/get-files', (req, res) => {
+	const s3params = {
+		Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+		MaxKeys: 10,
+	};
+	s3.listObjects(s3params, (err, data) => {
+		if (err) {
+			console.log(err, err.stack);
+		}
+		console.log(data);
+		res.json({
+			data,
+		});
+	});
+});
 
-        res.json({
-            file: req.body.filename,
-            data: data.Body.toString("utf-8"),
-        });
-    });
+app.post('/get-file', (req, res) => {
+	const s3params = {
+		Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+		Key: req.body.filename,
+	};
+	s3.getObject(s3params, (err, data) => {
+		if (err) {
+			console.log(err, err.stack);
+		}
+		console.log(data);
+		res.json({
+			file: req.body.filename,
+			data: data.Body.toString('utf-8'),
+		});
+	});
 });
 
 app.post('/upload-file', (req, res) => {
-	const fileContent = fs.readFileSync("./src/mobile.jpg");
+	const fileContent = fs.readFileSync('./src/mobile.jpg');
 	const s3params = {
-        Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
-        ACL: "public-read",
-        Key: `products/${Math.floor(Math.random() * 10)}-${new Date().getTime()}.jpg`,
-        Body: fileContent,
-    };
+		Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+		ACL: 'public-read',
+		Key: `products/${Math.floor(Math.random() * 10)}-${new Date().getTime()}.jpg`,
+		Body: fileContent,
+	};
 
 	s3.upload(s3params, (err, data) => {
-        if (err) {
-        	throw err;
-        }
+		if (err) {
+			throw err;
+		}
 
 		res.json({
-			status: "ok",
-			message: "File uploaded successfully.",
-			data: data.Location
+			status: 'ok',
+			message: 'File uploaded successfully.',
+			data: data.Location,
 		});
-    });
+	});
 });
 
 const port = process.env.PORT || 3001;
