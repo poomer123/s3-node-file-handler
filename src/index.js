@@ -30,7 +30,7 @@ app.post('/get-files', (req, res) => {
 		}
 
 		res.json({
-			data,
+			data, // file
 		});
 	});
 });
@@ -70,7 +70,7 @@ app.post('/upload-file', (req, res) => {
 		res.json({
 			status: 'ok',
 			message: 'File uploaded successfully.',
-			imgUrl: data.Location,
+			imgUrl: data.Location, // file url
 		});
 	});
 });
