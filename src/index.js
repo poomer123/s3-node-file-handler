@@ -92,6 +92,38 @@ app.post('/delete-file', (req, res) => {
 	});
 });
 
+app.post('/delete-files', (req, res) => {
+	const { filelist = [] } = req.body;
+	const Objects = filelist.map((file) => {
+		return { Key: `products/${file}` };
+	});
+
+	const s3params = {
+		Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+		Delete: {
+			Objects,
+			// Objects: [
+			// 	{
+			// 		Key: 'objectkey1',
+			// 	},
+			// 	{
+			// 		Key: 'objectkey2',
+			// 	},
+			// ],
+			Quiet: false,
+		},
+	};
+	s3.deleteObjects(s3params, (err, data) => {
+		if (err) {
+			console.log(err, err.stack);
+		}
+
+		res.json({
+			data, // Deleted file list
+		});
+	});
+});
+
 const port = process.env.PORT || 3001;
 
 app.listen(port || 3001, () => {
