@@ -34,7 +34,7 @@ app.post('/get-files', (req, res) => {
 app.post('/get-file', (req, res) => {
 	const s3params = {
 		Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
-		Key: req.body.filename,
+		Key: `products/${req.body.filename}`,
 	};
 	s3.getObject(s3params, (err, data) => {
 		if (err) {
