@@ -75,6 +75,23 @@ app.post('/upload-file', (req, res) => {
 	});
 });
 
+app.post('/delete-file', (req, res) => {
+	const s3params = {
+		Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
+		Key: `products/${req.body.filename}`,
+	};
+	s3.deleteObject(s3params, (err, data) => {
+		if (err) {
+			console.log(err, err.stack);
+		}
+
+		res.json({
+			file: req.body.filename,
+			data, // empty object
+		});
+	});
+});
+
 const port = process.env.PORT || 3001;
 
 app.listen(port || 3001, () => {
