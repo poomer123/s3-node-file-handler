@@ -15,6 +15,10 @@ const s3 = new AWS.S3({
 	secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
 
+function getS3UrlFromBucket(bucketName, fullPathName) {
+	return `https://${bucketName}.s3-ap-southeast-1.amazonaws.com/${fullPathName}`;
+}
+
 app.post('/get-files', (req, res) => {
 	const s3params = {
 		Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
@@ -40,9 +44,10 @@ app.post('/get-file', (req, res) => {
 		if (err) {
 			console.log(err, err.stack);
 		}
-		console.log(data);
+
 		res.json({
 			file: req.body.filename,
+			imgUrl: getS3UrlFromBucket(process.env.AWS_PUBLIC_BUCKET_NAME, `products/${req.body.filename}`),
 			data: data.Body.toString('utf-8'),
 		});
 	});
