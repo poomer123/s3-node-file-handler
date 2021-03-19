@@ -28,7 +28,7 @@ app.post('/get-files', (req, res) => {
 		if (err) {
 			console.log(err, err.stack);
 		}
-		console.log(data);
+
 		res.json({
 			data,
 		});
